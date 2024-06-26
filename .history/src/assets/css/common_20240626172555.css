@@ -1,0 +1,9 @@
+body {
+  background-color: #eff2f1;
+  font-family: Outfit-Regular, 'Microsoft Yahei';
+}
+
+@font-face {
+  font-family: Outfit-Regular;
+  src: url('../font/Outfit-Regular.ttf');
+}

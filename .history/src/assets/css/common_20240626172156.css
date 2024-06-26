@@ -1,0 +1,14 @@
+body {
+  background-color: #eff2f1;
+  font-family: Comfortaa-Regular;
+}
+
+@font-face {
+  font-family: Comfoorta-Bold;
+  src: url('../font/Comfortaa-Bold.ttf');
+}
+
+.content_mid {
+  width: 1140px;
+  margin: 0 auto;
+}

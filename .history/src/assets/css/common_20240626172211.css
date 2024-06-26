@@ -1,0 +1,14 @@
+body {
+  background-color: #eff2f1;
+  font-family: Outfit-Regular, 'Microsoft Yahei';
+}
+
+@font-face {
+  font-family: Outfit-Regular;
+  src: url('../font/Comfortaa-Bold.ttf');
+}
+
+.content_mid {
+  width: 1140px;
+  margin: 0 auto;
+}

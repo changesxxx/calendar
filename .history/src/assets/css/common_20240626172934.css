@@ -1,0 +1,18 @@
+:root {
+  --main-bg-color: skyblue;
+}
+
+body {
+  background-color: #eff2f1;
+  font-family: Outfit-Regular, 'Microsoft Yahei';
+}
+
+@font-face {
+  font-family: Outfit-Regular;
+  src: url('../font/Outfit-Regular.ttf');
+}
+
+@font-face {
+  font-family: Outfit-Light;
+  src: url('../font/Outfit-Light.ttf');
+}
