@@ -37,8 +37,8 @@ const calendarWrapper = styled.div`
 
   .calendar {
     flex: 1;
+
     padding: 0.6rem;
-    margin-top: 1rem;
 
     .day-of-week {
       display: flex;

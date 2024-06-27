@@ -9,8 +9,5 @@ export function test() {
   console.log('本月第一天', dayjs().startOf('M').format('DD/MM/YYYY'))
   console.log('本月最后一天', dayjs().endOf('M').format('DD/MM/YYYY'))
 
-  console.log(
-    '本周第一天',
-    dayjs().startOf('M').startOf('w').format('DD/MM/YYYY'),
-  )
+  console.log('本周第一天', dayjs().endOf('M').startOf('year'))
 }

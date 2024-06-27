@@ -11,6 +11,6 @@ export function test() {
 
   console.log(
     '本周第一天',
-    dayjs().startOf('M').startOf('w').format('DD/MM/YYYY'),
+    dayjs().endOf('M').startOf('w').format('DD/MM/YYYY'),
   )
 }

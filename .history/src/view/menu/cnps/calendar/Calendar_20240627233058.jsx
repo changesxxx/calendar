@@ -38,6 +38,7 @@ const Calendar = memo(() => {
           { 
             dayOfWeek.map(d => <span className='day' key={d}>{d }</span> )
           }
+          
         </div>
       </div>
     </CalendarWrapper>

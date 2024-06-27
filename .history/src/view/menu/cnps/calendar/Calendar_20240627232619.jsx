@@ -8,10 +8,6 @@ import { HiOutlineChevronRight } from 'react-icons/hi'
 import { test } from '@/utils/date_handle'
 
 const Calendar = memo(() => {
-  
-  const dayOfWeek=['Mo','Tu','We','Th','Fr','Sa','Su']
-
-
   useEffect(() => {
     test()
   })
@@ -34,11 +30,7 @@ const Calendar = memo(() => {
       </div>
 
       <div className="calendar">
-        <div className='day-of-week'>
-          { 
-            dayOfWeek.map(d => <span className='day' key={d}>{d }</span> )
-          }
-        </div>
+        <div className='is-today'></div>
       </div>
     </CalendarWrapper>
   )

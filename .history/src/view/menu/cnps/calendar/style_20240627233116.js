@@ -5,7 +5,7 @@ const calendarWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  flex: 7;
+  flex: 5;
 
   .selector {
     display: flex;
@@ -37,27 +37,15 @@ const calendarWrapper = styled.div`
 
   .calendar {
     flex: 1;
+
     padding: 0.6rem;
-    margin-top: 1rem;
+    /* background-color: red; */
 
     .day-of-week {
       display: flex;
 
       .day {
-        box-sizing: border-box;
-
-        font-family: Outfit-ExtraLight;
         flex: 1;
-        font-size: 0.875rem;
-      }
-
-      span:not(:first-child):not(:last-child) {
-        text-align: center;
-        margin: 0 0.75rem;
-      }
-
-      span:last-child {
-        text-align: right;
       }
     }
   }

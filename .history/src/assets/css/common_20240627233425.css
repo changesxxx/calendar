@@ -53,8 +53,8 @@ body {
 }
 
 @font-face {
-  font-family: Outfit-ExtraLight;
-  src: url('../font/Outfit-ExtraLight.ttf');
+  font-family: Outfit-Thin;
+  src: url('../font/Outfit-Thin.ttf');
 }
 
 .card {
