@@ -1,0 +1,58 @@
+:root {
+  --main-bg-color: skyblue;
+  --minor-bg-color: #eff2f1;
+  --minor-color: #b591ef;
+}
+
+/* 当视口宽度小于1200px时应用的样式 */
+@media only screen and (max-width: 1200px) {
+  html {
+    font-size: 10px;
+  }
+}
+
+/* 当视口宽度在1200px到1536px之间时应用的样式 */
+@media only screen and (min-width: 1200px) and (max-width: 1536px) {
+  html {
+    font-size: 12px;
+  }
+}
+
+@media only screen and (min-width: 1537px) and (max-width: 1920px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+/* 当视口宽度大于于2200px时应用的样式 */
+@media only screen and (min-width: 2200px) {
+  html {
+    font-size: 18px;
+  }
+}
+
+body {
+  background: url('../img/main_bg_img.jpg') no-repeat center;
+  background-size: cover;
+  font-family: Outfit-Regular, 'Microsoft Yahei';
+}
+
+@font-face {
+  font-family: Outfit-Regular;
+  src: url('../font/Outfit-Regular.ttf');
+}
+
+@font-face {
+  font-family: Outfit-Light;
+  src: url('../font/Outfit-Light.ttf');
+}
+
+.card {
+  backdrop-filter: blur(18px) saturate(145%);
+  -webkit-backdrop-filter: blur(18px) saturate(145%);
+  background-color: rgba(38, 38, 38, 0.45);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.125);
+
+  margin-bottom: 0.66rem;
+}

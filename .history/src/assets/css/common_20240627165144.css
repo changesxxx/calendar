@@ -1,0 +1,36 @@
+:root {
+  --main-bg-color: skyblue;
+  --minor-bg-color: #eff2f1;
+  --minor-color: #b591ef;
+}
+
+@media screen and (max-width: 768px) {
+  /* 在屏幕宽度小于等于768px时应用以下样式 */
+  body {
+    font-size: 14px;
+  }
+}
+
+body {
+  background: url('../img/main_bg_img.jpg') no-repeat center;
+  background-size: cover;
+  font-family: Outfit-Regular, 'Microsoft Yahei';
+}
+
+@font-face {
+  font-family: Outfit-Regular;
+  src: url('../font/Outfit-Regular.ttf');
+}
+
+@font-face {
+  font-family: Outfit-Light;
+  src: url('../font/Outfit-Light.ttf');
+}
+
+.card {
+  backdrop-filter: blur(18px) saturate(145%);
+  -webkit-backdrop-filter: blur(18px) saturate(145%);
+  background-color: rgba(38, 38, 38, 0.45);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.125);
+}
