@@ -24,8 +24,8 @@ function getCurrentPageFirstDay(year, month) {
 
   //月份从 0 开始计算。所以要进行-1
   const date = dayjs()
-    .set('year', year)
-    .set('month', month - 1)
+    .set('YYYY', year)
+    .set('M', month - 1)
 
   const firstDay = date.startOf('M').startOf('w')
 

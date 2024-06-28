@@ -19,8 +19,6 @@ const calendarWrapper = styled.div`
 
       .icon {
         display: flex;
-        justify-content: center;
-
         align-items: center;
 
         width: 1.9rem;
@@ -29,6 +27,7 @@ const calendarWrapper = styled.div`
         padding: 0;
         margin: 0;
 
+        text-align: center;
         line-height: 1.9rem;
 
         border-radius: 0.48rem;

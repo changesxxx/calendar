@@ -8,7 +8,7 @@ export function getCalendar() {
   const { year, month } = cache.getItem('date')
 
   //获取指定日历页第一天
-  const firstDay = getCurrentPageFirstDay(year, month)
+  const firstDay = getCurrentPageFirstDay(2012, 1)
 
   //填充日历数组
   fillCalendarArray(firstDay)
@@ -26,6 +26,8 @@ function getCurrentPageFirstDay(year, month) {
   const date = dayjs()
     .set('year', year)
     .set('month', month - 1)
+
+  console.log('date', date.format('DD/MM/YYYY'))
 
   const firstDay = date.startOf('M').startOf('w')
 

@@ -1,14 +1,10 @@
 import dayjs from 'dayjs'
 
 import _ from 'lodash'
-import cache from './cache'
 
 export function getCalendar() {
-  //获取当前日期数据
-  const { year, month } = cache.getItem('date')
-
   //获取指定日历页第一天
-  const firstDay = getCurrentPageFirstDay(year, month)
+  const firstDay = getCurrentPageFirstDay(2024, 6)
 
   //填充日历数组
   fillCalendarArray(firstDay)
@@ -24,8 +20,8 @@ function getCurrentPageFirstDay(year, month) {
 
   //月份从 0 开始计算。所以要进行-1
   const date = dayjs()
-    .set('year', year)
-    .set('month', month - 1)
+    .set('YYYY', year)
+    .set('M', month - 1)
 
   const firstDay = date.startOf('M').startOf('w')
 

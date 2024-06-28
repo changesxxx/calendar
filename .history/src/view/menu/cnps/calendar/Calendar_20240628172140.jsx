@@ -5,7 +5,8 @@ import CalendarWrapper from './style'
 import { HiOutlineChevronLeft } from 'react-icons/hi'
 import { HiOutlineChevronRight } from 'react-icons/hi'
 
-import { getCalendar } from '@/utils/date_handle'
+import { test } from '@/utils/date_handle'
+import second from 'first'
 
 import dayjs from 'dayjs'
 import cache from '@/utils/cache'
@@ -13,17 +14,23 @@ import cache from '@/utils/cache'
 const Calendar = memo(() => {
   const dayOfWeek = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
 
+  function test1() {
+    /*  localStorage.setItem(
+      JSON.stringify({ name: 'key' }),
+      JSON.stringify({ name: 'zs' }),
+    ) */
+
+    console.log(
+      JSON.parse(localStorage.getItem(JSON.stringify({ name: 'key' }))),
+    )
+  }
+
   useEffect(() => {
     //获取当前年份及月份并缓存
-    if (!cache.getItem('date')) {
-      cache.setItem('date', {
-        year: dayjs().get('year'),
-        month: dayjs().get('month'),
-      })
-    }
-
-    //获取日历数据
-    getCalendar()
+    cache.setItem('date', {
+      year: dayjs().get('year'),
+      month: dayjs().get('month'),
+    })
   })
 
   return (
@@ -52,6 +59,14 @@ const Calendar = memo(() => {
           ))}
         </div>
       </div>
+
+      <button
+        onClick={(e) => {
+          test1()
+        }}
+      >
+        ++++++
+      </button>
     </CalendarWrapper>
   )
 })

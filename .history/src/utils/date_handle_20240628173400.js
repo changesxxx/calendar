@@ -27,6 +27,8 @@ function getCurrentPageFirstDay(year, month) {
     .set('year', year)
     .set('month', month - 1)
 
+  console.log('date', date.format('DD/MM/YYYY'))
+
   const firstDay = date.startOf('M').startOf('w')
 
   return firstDay
