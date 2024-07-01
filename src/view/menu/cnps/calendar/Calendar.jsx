@@ -11,15 +11,16 @@ import {
   getToday,
   getTodayIndex,
   getDayByFormatMonth,
+  recentYears,
+
 } from '@/utils/date_handle'
 
 import dayjs from 'dayjs'
 import cache from '@/utils/cache'
 import Selector from './cnps/selector/Selector'
+import DateList from './cnps/date_list/DateList'
 
 const Calendar = memo(() => {
-  const dayOfWeek = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
-
   //日历数据
   const [calendarArray, setCalendar] = useState([])
   //当前选中日期 默认为当天
@@ -27,7 +28,7 @@ const Calendar = memo(() => {
   //当前日期 所在周
   const [currentWeek, setCurrentWeek] = useState(-1)
   //日期选择模式
-  const [selectByDate, setSelectByDate] = useState('day')
+  const [selectByDate, setSelectByDate] = useState('date')
 
   useEffect(() => {
     //获取当前年份及月份并缓存
@@ -47,6 +48,9 @@ const Calendar = memo(() => {
 
     //获取当前index位置
     setCurrentWeek(getTodayIndex(dayjs()))
+
+    // console.log('useEffect setSelectByDate:',selectByDate)
+
   }, [])
 
   //日期点击事件
@@ -54,47 +58,19 @@ const Calendar = memo(() => {
     //重新设置日期所在周
     setCurrentWeek(getTodayIndex(day))
     //重新设置选中日期
-    setCurrentDay(day)
-  }
 
-  //渲染日历数据转换为页面显示元素(包含选中样式的添加)
-  function dayListElHandle() {
-    return calendarArray.map((week, index) => {
-      let weekClass = classnames('day-of-week', {
-        'week-active': currentWeek === index,
-      })
+    switch (selectByDate) { 
+      case 'date':
+      setCurrentDay(day)
+        break
+      case 'month':
+      setCurrentDay(dayjs().set('year',currentDay.get('year')).set('month',day.get('month')))
+        break
+     case 'year':
+        setCurrentDay(dayjs().set('year',day.get('year')))
+          break
+    }
 
-      return (
-        <div key={index} className={weekClass}>
-          {week.map((d) => {
-            let dayClass = 'day'
-
-            if (
-              currentDay.get('date') === d.get('date') &&
-              currentDay.get('month') === d.get('month')
-            ) {
-              dayClass += ' active'
-            }
-
-            if (currentDay.get('month') !== d.get('month')) {
-              dayClass += ' obsolete'
-            }
-
-            return (
-              <span
-                className={dayClass}
-                key={d}
-                onClick={(e) => {
-                  dayElClickHandle(d)
-                }}
-              >
-                {d.get('date')}
-              </span>
-            )
-          })}
-        </div>
-      )
-    })
   }
 
   //切换上一个月/下一个月日历
@@ -122,6 +98,8 @@ const Calendar = memo(() => {
   //修改日期选择模式
   function changesSelectByDate(mode) {
     setSelectByDate(mode)
+   
+    setCalendar(recentYears(currentDay))
   }
 
   return (
@@ -131,9 +109,10 @@ const Calendar = memo(() => {
         aroundHandle={aroundHandle}
         selectByDate={selectByDate}
         changesSelectByDate={changesSelectByDate}
+        calendarArray={calendarArray}
       ></Selector>
 
-      <div className="calendar">
+    {/*   <div className="calendar">
         <div className="day-of-week">
           {dayOfWeek.map((d) => (
             <span className="day" key={d}>
@@ -143,7 +122,12 @@ const Calendar = memo(() => {
         </div>
 
         <div className="day-list">{dayListElHandle()}</div>
-      </div>
+      </div> */}
+
+
+      <DateList calendarArray={calendarArray} currentDay={currentDay} currentWeek={currentWeek}
+        dayElClickHandle={dayElClickHandle} selectByDate={selectByDate}
+      > </DateList>
     </CalendarWrapper>
   )
 })

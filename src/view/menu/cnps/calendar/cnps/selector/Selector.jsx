@@ -5,10 +5,13 @@ import SelectorWrapper from './style'
 import { HiOutlineChevronLeft } from 'react-icons/hi'
 import { HiOutlineChevronRight } from 'react-icons/hi'
 
-import { getDayByFormatMonth } from '@/utils/date_handle'
+import { getDayByFormatMonth, recentYears } from '@/utils/date_handle'
+
+import _ from 'lodash'
+
 
 const Selector = memo((props) => {
-  const { currentDay, aroundHandle, selectByDate, changesSelectByDate } = props
+  const { currentDay, aroundHandle, selectByDate, changesSelectByDate,calendarArray } = props
 
   //上一个/下一个点击事件
   function iconHandle(type) {
@@ -17,7 +20,7 @@ const Selector = memo((props) => {
 
   function selectHandle() {
     switch (selectByDate) {
-      case 'day':
+      case 'date':
         changesSelectByDate('month')
         break
       case 'month':
@@ -26,11 +29,16 @@ const Selector = memo((props) => {
     }
   }
 
+
+  useEffect(() => { 
+    console.log('calendarArray:', _.first(_.first(calendarArray))?.get('year')) 
+  })
+
   return (
     <SelectorWrapper>
       <div className="current-date" onClick={(e) => selectHandle()}>
         <>
-          {selectByDate === 'day' && (
+          {selectByDate === 'date' && (
             <span style={{ marginRight: '0.4rem' }}>
               {getDayByFormatMonth(currentDay)}
             </span>
@@ -38,6 +46,8 @@ const Selector = memo((props) => {
 
           <span>{currentDay.get('year')}</span>
         </>
+
+       { _.first(_.first(calendarArray))?.get('year')} - {_.last(_.last(calendarArray))?.get('year')} 
       </div>
       <div className="tab">
         <div

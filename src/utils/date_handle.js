@@ -83,3 +83,24 @@ export function getDayByFormatMonth(day) {
 
   return months[day.get('month')]
 }
+
+/* 
+  获取最近的年份 点击年时展现的列表数据
+*/
+export function recentYears(day) {
+  const yearArray = _.times(3, () => _.times(4, () => 0))
+
+  let count = 1
+
+  const startYeat = day.subtract(5, 'year')
+
+  //填充月或年
+  yearArray.forEach((el) => {
+    for (let index = 0; index <= 3; index++) {
+      el[index] = startYeat.add(count, 'year').set('month', count - 1)
+      count += 1
+    }
+  })
+
+  return yearArray
+}
