@@ -13,7 +13,7 @@ module.exports = {
       extensions: ['.js', '.jsx'],
     },
     configure(webpackConfig) {
-      webpackConfig.devtool = false
+      webpackConfig.devtool = 'source-map'
       return webpackConfig
     },
   },

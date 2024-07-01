@@ -7,25 +7,27 @@
   <title>Document</title>
 </head>
 <style>
-  body {
-    height: 100vh;
-  }
-
   .box {
-    max-width: 500px;
-    width: 90%;
-    max-height: 90%;
-    height: 80%;
-    margin: 200px auto;
+    box-sizing: border-box;
+    padding: 10px;
+    width: 400px;
+    display: flex;
+
+    background-color: #ccc;
   }
 
-  .box1 {
-    background-color: red;
-    height: 100%;
+  .item {
+    box-sizing: border-box;
 
 
-    border-radius: 32px;
-    width: 100px;
+    width: 40px;
+    height: 40px;
+    background-color: skyblue;
+
+    border: 2px solid #ccc;
+
+
+    margin: auto;
   }
 </style>
 
@@ -35,8 +37,12 @@
 <body>
   <div class="box">
 
-    <div class="box1"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
 
+    <div class="item"></div>
+    <div class="item"></div>
 
 
   </div>

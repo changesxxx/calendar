@@ -7,61 +7,54 @@ const calendarWrapper = styled.div`
   width: 100%;
   flex: 7;
 
-  .selector {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 2.1rem;
-
-    .tab {
-      display: flex;
-      align-items: center;
-
-      .icon {
-        display: flex;
-        justify-content: center;
-
-        align-items: center;
-
-        width: 1.9rem;
-        height: 1.9rem;
-
-        padding: 0;
-        margin: 0;
-
-        line-height: 1.9rem;
-
-        border-radius: 0.48rem;
-
-        cursor: pointer;
-      }
-    }
-  }
-
   .calendar {
     flex: 1;
-    padding: 0.6rem;
+    padding: 0.6rem 0 0;
     margin-top: 1rem;
 
     .day-of-week {
+      box-sizing: border-box;
+
       display: flex;
+      padding: 0.125rem;
+
+      text-align: center;
 
       .day {
-        box-sizing: border-box;
-
         font-family: Outfit-ExtraLight;
-        flex: 1;
+        margin: auto;
         font-size: 0.875rem;
       }
+    }
 
-      span:not(:first-child):not(:last-child) {
-        text-align: center;
-        margin: 0 0.75rem;
-      }
+    .day-list {
+      margin-top: 0.5rem;
+      text-align: center;
 
-      span:last-child {
-        text-align: right;
+      .day {
+        width: 2.5rem;
+        height: 2.5rem;
+
+        line-height: 2.5rem;
+        cursor: pointer;
       }
+    }
+
+    .active {
+      color: #333;
+      font-weight: 700;
+
+      border-radius: 50%;
+      background-color: var(--minor-color);
+    }
+
+    .week-active {
+      border-radius: 2rem;
+      background-color: #0e0e0e;
+    }
+
+    .obsolete {
+      color: #434342;
     }
   }
 `
