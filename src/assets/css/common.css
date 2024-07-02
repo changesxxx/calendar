@@ -2,6 +2,9 @@
   --main-bg-color: skyblue;
   --minor-bg-color: #eff2f1;
   --minor-color: #b591ef;
+
+  --secondary-color: #f5f6f7;
+  --minor-dark-color: #262626;
 }
 
 /* 当视口宽度小于1200px时应用的样式 */
@@ -55,6 +58,16 @@ body {
 @font-face {
   font-family: Outfit-ExtraLight;
   src: url('../font/Outfit-ExtraLight.ttf');
+}
+
+@font-face {
+  font-family: Outfit-Medium;
+  src: url('../font/Outfit-Medium.ttf');
+}
+
+@font-face {
+  font-family: Outfit-Bold;
+  src: url('../font/Outfit-Bold.ttf');
 }
 
 .card {
