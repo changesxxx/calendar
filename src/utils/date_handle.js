@@ -1,5 +1,7 @@
 import dayjs from 'dayjs'
 import toObject from 'dayjs/plugin/toObject'
+import duration from 'dayjs/plugin/duration'
+import objectSupport from 'dayjs/plugin/objectSupport'
 
 import _ from 'lodash'
 import cache from './cache'
@@ -7,6 +9,8 @@ import cache from './cache'
 const calendarArray = _.times(5, () => _.times(7, () => 0))
 
 dayjs.extend(toObject)
+dayjs.extend(duration)
+dayjs.extend(objectSupport)
 
 export function getCalendar(
   year = cache.getItem('date').year,
@@ -35,16 +39,18 @@ function getCurrentPageFirstDay(year, month) {
 }
 
 //填充日历数组
+
 function fillCalendarArray(firstDay) {
   let day = 0
   //5行7列的天数 格式为:[[...7天],...,[...]] 每个[...7天代表一个周]
-
   //填充天数
-  calendarArray.forEach((week) => {
+  calendarArray.forEach((week, index) => {
+    const dayArr = []
     for (let index = 0; index < week.length; index++) {
-      week[index] = firstDay.add(day, 'day').toObject()
+      dayArr[index] = firstDay.add(day, 'day').toObject()
       day++
     }
+    calendarArray[index] = dayArr
   })
 
   return calendarArray
@@ -58,13 +64,10 @@ export function getToday() {
 }
 
 export function getTodayIndex(today) {
-  console.log('today:', today)
-
   const index = calendarArray.findIndex((w) =>
-    w.some(
-      (d) => d.date === today.get('date') && d.months === today.get('month'),
-    ),
+    w.some((d) => d.date === today.date && d.months === today.months),
   )
+
   return index
 }
 
@@ -84,6 +87,8 @@ export function getDayByFormatMonth(day) {
     'December',
   ]
 
+  console.log('getDayByFormatMonth', day)
+
   return months[day.months]
 }
 
@@ -95,15 +100,22 @@ export function recentYears(day) {
 
   let count = 1
 
-  const startYeat = day.subtract(5, 'year')
+  const startYeat = dayjs(day).subtract(5, 'year')
 
   //填充月或年
   yearArray.forEach((el) => {
     for (let index = 0; index <= 3; index++) {
-      el[index] = startYeat.add(count, 'year').set('month', count - 1)
+      el[index] = startYeat
+        .add(count, 'year')
+        .set('month', count - 1)
+        .toObject()
       count += 1
     }
   })
 
+  console.log(yearArray)
+
   return yearArray
 }
+
+export default dayjs

@@ -1,6 +1,10 @@
 import React, { memo, useEffect, useState } from 'react'
 
+
+import { useSelector,  shallowEqual } from 'react-redux'
+
 import SelectorWrapper from './style'
+
 
 import { HiOutlineChevronLeft } from 'react-icons/hi'
 import { HiOutlineChevronRight } from 'react-icons/hi'
@@ -10,13 +14,22 @@ import { getDayByFormatMonth, recentYears } from '@/utils/date_handle'
 import _ from 'lodash'
 
 const Selector = memo((props) => {
+  
   const {
-    currentDay,
     aroundHandle,
     selectByDate,
     changesSelectByDate,
     calendarArray,
   } = props
+
+
+    //store数据
+    const { currentDay} = useSelector(
+      (state) => ({
+        currentDay:state.date.currentDay
+      }),
+      shallowEqual,
+    )
 
   //上一个/下一个点击事件
   function iconHandle(type) {
@@ -26,10 +39,10 @@ const Selector = memo((props) => {
   function selectHandle() {
     switch (selectByDate) {
       case 'date':
-        changesSelectByDate('month')
+        changesSelectByDate('months')
         break
-      case 'month':
-        changesSelectByDate('year')
+      case 'months':
+        changesSelectByDate('years')
         break
     }
   }
@@ -46,9 +59,9 @@ const Selector = memo((props) => {
             </span>
           )}
 
-          {selectByDate !== 'year' && <span>{currentDay.years}</span>}
+          {selectByDate !== 'years' && <span>{currentDay.years}</span>}
         </>
-        {selectByDate === 'year' && (
+        {selectByDate === 'years' && (
           <>
             {_.first(_.first(calendarArray))?.years}-
             {_.last(_.last(calendarArray))?.years}

@@ -1,46 +1,49 @@
 import React, { memo, useEffect } from 'react'
 
+import { useSelector, shallowEqual } from 'react-redux'
+
+import {getTodayIndex} from '@/utils/date_handle'
+
 import classnames from 'classnames'
 
+
 import DateListWrapper from './style'
-import dayjs from 'dayjs'
 
 const DateList = memo((props) => {
   const dayOfWeek = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
 
   const {
     calendarArray,
-    currentDay,
-    currentWeek,
     dayElClickHandle,
     selectByDate,
-    today,
   } = props
 
+   //store数据
+   const { currentDay} = useSelector(
+    (state) => ({
+       currentDay: state.date.currentDay,
+    }),
+    shallowEqual,
+  )
+
+
   useEffect(() => {
-    console.log('calendarArray:', calendarArray)
+    // console.log('calendarArray:', calendarArray)
   })
 
   function activeHandle(d) {
     let flag = false
 
-    /*   console.log(
-      currentDay.get('month'),
-      currentDay.get('date'),
-      '-',
-      d.get('month'),
-      d.get('date'),
-    ) */
 
     switch (selectByDate) {
       case 'date':
-        flag = today.date === d.date && today.months === d.months
+        flag = currentDay.date === d.date && currentDay.months === d.months
         break
-      case 'month':
-        flag = today.months === d.months
+      case 'months':
+        flag = currentDay.months === d.months
         break
-      case 'year':
-        flag = today.years === d.years
+      case 'years':
+        flag = currentDay.years === d.years
         break
     }
 
@@ -51,13 +54,15 @@ const DateList = memo((props) => {
   function dayListElHandle() {
     return calendarArray.map((week, index) => {
       let weekClass = classnames('day-of-week', {
-        'week-active': currentWeek === index,
+        'week-active': selectByDate ==='date' && getTodayIndex(currentDay) === index,
       })
 
       return (
         <div key={index} className={weekClass}>
           {week.map((d, index) => {
+
             let dayClass = 'day'
+
 
             if (currentDay.date === d.date && currentDay.months === d.months) {
               dayClass += ' active'
@@ -75,7 +80,7 @@ const DateList = memo((props) => {
                   dayElClickHandle(d)
                 }}
               >
-                {selectByDate === 'month'
+                {selectByDate === 'months'
                   ? d[selectByDate] + 1
                   : d[selectByDate]}
               </span>

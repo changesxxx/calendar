@@ -39,6 +39,40 @@
 
     <div class="box2">12</div>
 
+
+    <script>
+      const calendarArray = [
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+      ]
+
+
+      function fillCalendarArray () {
+        //填充天数
+        calendarArray.forEach((week) => {
+          for (let index = 0; index < week.length; index++) {
+            week[index] = { name: index }
+          }
+        })
+
+
+        return calendarArray
+      }
+
+      fillCalendarArray()
+      console.log(calendarArray)
+
+
+      fillCalendarArray()
+
+      console.log(calendarArray)
+
+
+    </script>
+
   </div>
 
 </body>

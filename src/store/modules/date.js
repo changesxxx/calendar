@@ -9,16 +9,19 @@ const dateSlice = createSlice({
     today: getToday(),
     //日历数据
     calendarArray: [],
+    //当前选中日期
+    currentDay: getToday(),
   },
   reducers: {
     calendarArrayChange(state, { payload }) {
-      console.log(payload)
-
       state.calendarArray = payload
+    },
+    currentDayChange(state, { payload }) {
+      state.currentDay = payload
     },
   },
 })
 
-export const { calendarArrayChange } = dateSlice.actions
+export const { calendarArrayChange, currentDayChange } = dateSlice.actions
 
 export default dateSlice.reducer

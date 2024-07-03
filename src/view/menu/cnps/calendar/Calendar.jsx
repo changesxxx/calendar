@@ -4,7 +4,7 @@ import CalendarWrapper from './style'
 
 import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 
-import { calendarArrayChange } from '@/store/modules/date'
+import { calendarArrayChange ,currentDayChange} from '@/store/modules/date'
 
 import {
   getCalendar,
@@ -13,31 +13,26 @@ import {
   recentYears,
 } from '@/utils/date_handle'
 
-import dayjs from 'dayjs'
+import dayjs from '@/utils/date_handle'
+
 import cache from '@/utils/cache'
 import Selector from './cnps/selector/Selector'
 import DateList from './cnps/date_list/DateList'
 
 const Calendar = memo(() => {
+
   //store数据
-  const { calendarArray } = useSelector(
+  const { calendarArray ,today,currentDay} = useSelector(
     (state) => ({
       calendarArray: state.date.calendarArray,
+      today: state.date.today,
+      currentDay:state.date.currentDay
     }),
     shallowEqual,
   )
 
   const dispatch = useDispatch()
-
-  //日历数据
-  // const [calendarArray, setCalendar] = useState([])
-  //当前选中日期 默认为当天
-  const [currentDay, setCurrentDay] = useState(getToday())
-  //当天
-  const [today, setToday] = useState(getToday())
-
-  //当前日期 所在周
-  const [currentWeek, setCurrentWeek] = useState(-1)
+  
   //日期选择模式
   const [selectByDate, setSelectByDate] = useState('date')
 
@@ -57,66 +52,68 @@ const Calendar = memo(() => {
     //获取日历数据
     dispatch(calendarArrayChange([...getCalendar()]))
 
-    // setCalendar([...getCalendar()])
-
-    //获取当前index位置
-    setCurrentWeek(getTodayIndex(dayjs()))
 
     // console.log('useEffect setSelectByDate:',selectByDate)
   }, [])
 
   //日期点击事件
-  function dayElClickHandle(day) {
-    console.log('click day:', day)
+  function dayElClickHandle (day) {
+    
+    console.log(day)
 
-    //重新设置日期所在周
-    if (selectByDate === 'daye') setCurrentWeek(getTodayIndex(day))
     //重新设置选中日期
-
     switch (selectByDate) {
       case 'date':
-        setCurrentDay(day)
+        dispatch(currentDayChange(day))
         break
-      case 'month':
-        setCurrentDay(
+      case 'months':
+        // dispatch(currentDayChange({...currentDay,year:currentDay.year,month:day.get('month')}))
+     /*    setCurrentDay(
           dayjs()
             .set('year', currentDay.get('year'))
             .set('month', day.get('month')),
-        )
+        ) */
+        //重新修改当前选中日期 
+         dispatch(currentDayChange({...currentDay,years:currentDay.years,months:day.months,date:undefined}))
         //重新获取日历数据
-        dispatch([...getCalendar(currentDay.get('year'), day.get('month'))])
+        dispatch(calendarArrayChange([...getCalendar(currentDay.years, day.months)]))
         // setCalendar([...getCalendar(currentDay.get('year'), day.get('month'))])
         //配置好日期跳转到日试图
         setSelectByDate('date')
         break
-      case 'year':
-        setCurrentDay(dayjs().set('year', day.get('year')))
+      case 'years':
+        if (day.years === currentDay.years) {
+          dispatch(currentDayChange({ ...currentDay, years: day.years}))
+        } else { 
+          dispatch(currentDayChange({...currentDay,years:day.years,months:undefined,date:undefined}))
+        }
+        // setCurrentDay(dayjs().set('year', day.get('year')))
         //配置好日期跳转到月试图
-        setSelectByDate('month')
+        setSelectByDate('months')
         break
     }
   }
 
   //切换上一个月/下一个月日历
-  function aroundHandle(type) {
+  function aroundHandle (type) {
+    
     switch (type) {
       case 'left':
         //获取减去后的日期
-        const subDay = currentDay.subtract(1, 'month')
+        const subDay = dayjs(currentDay).subtract(1, 'month')
         //重新获取日历数据并保存
-        dispatch([...getCalendar(subDay.get('year'), subDay.get('month'))])
+        dispatch(calendarArrayChange([...getCalendar(subDay.get('year'), subDay.get('month'))]))
         // setCalendar([...getCalendar(subDay.get('year'), subDay.get('month'))])
         //修改当前日期
-        setCurrentDay(currentDay.subtract(1, 'month'))
-        //修改当前日期所在周
-        setCurrentWeek(getTodayIndex(subDay))
+        // setCurrentDay(currentDay.subtract(1, 'month'))
+        dispatch(currentDayChange({...currentDay,years:subDay.get('year'),months:subDay.get('month')}))
         break
       case 'right':
-        const addDay = currentDay.add(1, 'month')
-        dispatch([...getCalendar(addDay.get('year'), addDay.get('month'))])
+        const addDay = dayjs(currentDay).add(1, 'month')
+        dispatch(calendarArrayChange([...getCalendar(addDay.get('year'), addDay.get('month'))]))
         // setCalendar([...getCalendar(addDay.get('year'), addDay.get('month'))])
-        setCurrentDay(currentDay.add(1, 'month'))
-        setCurrentWeek(getTodayIndex(addDay))
+        // setCurrentDay(currentDay.add(1, 'month'))
+        dispatch(currentDayChange({...currentDay,years:addDay.get('year'),months:addDay.get('month')}))
         break
     }
   }
@@ -125,18 +122,14 @@ const Calendar = memo(() => {
   function changesSelectByDate(mode) {
     setSelectByDate(mode)
 
-    dispatch(recentYears(currentDay))
+    dispatch(calendarArrayChange(recentYears(currentDay)))
 
     // setCalendar(recentYears(currentDay))
-
-    //只有日试图 才需要计算当前日期处于哪一周 切换到月和年清空currentWeek
-    if (mode !== 'date') setCurrentWeek(-1)
   }
 
   return (
     <CalendarWrapper className="card">
       <Selector
-        currentDay={currentDay}
         aroundHandle={aroundHandle}
         selectByDate={selectByDate}
         changesSelectByDate={changesSelectByDate}
@@ -157,8 +150,6 @@ const Calendar = memo(() => {
 
       <DateList
         calendarArray={calendarArray}
-        currentDay={currentDay}
-        currentWeek={currentWeek}
         dayElClickHandle={dayElClickHandle}
         selectByDate={selectByDate}
         today={today}
