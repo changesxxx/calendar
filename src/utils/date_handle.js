@@ -1,9 +1,12 @@
 import dayjs from 'dayjs'
+import toObject from 'dayjs/plugin/toObject'
 
 import _ from 'lodash'
 import cache from './cache'
 
 const calendarArray = _.times(5, () => _.times(7, () => 0))
+
+dayjs.extend(toObject)
 
 export function getCalendar(
   year = cache.getItem('date').year,
@@ -39,7 +42,7 @@ function fillCalendarArray(firstDay) {
   //填充天数
   calendarArray.forEach((week) => {
     for (let index = 0; index < week.length; index++) {
-      week[index] = firstDay.add(day, 'day')
+      week[index] = firstDay.add(day, 'day').toObject()
       day++
     }
   })
@@ -51,15 +54,15 @@ function fillCalendarArray(firstDay) {
 获取当前日期
 */
 export function getToday() {
-  return dayjs()
+  return dayjs().toObject()
 }
 
 export function getTodayIndex(today) {
+  console.log('today:', today)
+
   const index = calendarArray.findIndex((w) =>
     w.some(
-      (d) =>
-        d.get('date') === today.get('date') &&
-        d.get('month') === today.get('month'),
+      (d) => d.date === today.get('date') && d.months === today.get('month'),
     ),
   )
   return index
@@ -81,7 +84,7 @@ export function getDayByFormatMonth(day) {
     'December',
   ]
 
-  return months[day.get('month')]
+  return months[day.months]
 }
 
 /* 

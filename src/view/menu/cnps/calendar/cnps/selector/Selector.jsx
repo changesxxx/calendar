@@ -9,9 +9,14 @@ import { getDayByFormatMonth, recentYears } from '@/utils/date_handle'
 
 import _ from 'lodash'
 
-
 const Selector = memo((props) => {
-  const { currentDay, aroundHandle, selectByDate, changesSelectByDate,calendarArray } = props
+  const {
+    currentDay,
+    aroundHandle,
+    selectByDate,
+    changesSelectByDate,
+    calendarArray,
+  } = props
 
   //上一个/下一个点击事件
   function iconHandle(type) {
@@ -29,10 +34,7 @@ const Selector = memo((props) => {
     }
   }
 
-
-  useEffect(() => { 
-    console.log('calendarArray:', _.first(_.first(calendarArray))?.get('year')) 
-  })
+  useEffect(() => {})
 
   return (
     <SelectorWrapper>
@@ -44,10 +46,14 @@ const Selector = memo((props) => {
             </span>
           )}
 
-          <span>{currentDay.get('year')}</span>
+          {selectByDate !== 'year' && <span>{currentDay.years}</span>}
         </>
-
-       { _.first(_.first(calendarArray))?.get('year')} - {_.last(_.last(calendarArray))?.get('year')} 
+        {selectByDate === 'year' && (
+          <>
+            {_.first(_.first(calendarArray))?.years}-
+            {_.last(_.last(calendarArray))?.years}
+          </>
+        )}
       </div>
       <div className="tab">
         <div
