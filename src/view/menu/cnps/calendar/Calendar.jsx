@@ -4,14 +4,9 @@ import CalendarWrapper from './style'
 
 import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 
-import { calendarArrayChange ,currentDayChange} from '@/store/modules/date'
+import { calendarArrayChange, currentDayChange } from '@/store/modules/date'
 
-import {
-  getCalendar,
-  getToday,
-  getTodayIndex,
-  recentYears,
-} from '@/utils/date_handle'
+import { getCalendar, recentYears, recentMonth } from '@/utils/date_handle'
 
 import dayjs from '@/utils/date_handle'
 
@@ -20,19 +15,18 @@ import Selector from './cnps/selector/Selector'
 import DateList from './cnps/date_list/DateList'
 
 const Calendar = memo(() => {
-
   //store数据
-  const { calendarArray ,today,currentDay} = useSelector(
+  const { calendarArray, today, currentDay } = useSelector(
     (state) => ({
       calendarArray: state.date.calendarArray,
       today: state.date.today,
-      currentDay:state.date.currentDay
+      currentDay: state.date.currentDay,
     }),
     shallowEqual,
   )
 
   const dispatch = useDispatch()
-  
+
   //日期选择模式
   const [selectByDate, setSelectByDate] = useState('date')
 
@@ -52,13 +46,11 @@ const Calendar = memo(() => {
     //获取日历数据
     dispatch(calendarArrayChange([...getCalendar()]))
 
-
     // console.log('useEffect setSelectByDate:',selectByDate)
   }, [])
 
   //日期点击事件
-  function dayElClickHandle (day) {
-    
+  function dayElClickHandle(day) {
     console.log(day)
 
     //重新设置选中日期
@@ -67,27 +59,39 @@ const Calendar = memo(() => {
         dispatch(currentDayChange(day))
         break
       case 'months':
-        // dispatch(currentDayChange({...currentDay,year:currentDay.year,month:day.get('month')}))
-     /*    setCurrentDay(
-          dayjs()
-            .set('year', currentDay.get('year'))
-            .set('month', day.get('month')),
-        ) */
-        //重新修改当前选中日期 
-         dispatch(currentDayChange({...currentDay,years:currentDay.years,months:day.months,date:undefined}))
+        //重新修改当前选中日期
+        if (day.years === today.years && day.months === today.months) {
+          dispatch(
+            currentDayChange({
+              ...currentDay,
+              years: day.years,
+              months: day.months,
+              date: day.date,
+            }),
+          )
+        } else {
+          dispatch(
+            currentDayChange({
+              ...currentDay,
+              years: day.years,
+              months: day.months,
+              date: undefined,
+            }),
+          )
+        }
         //重新获取日历数据
-        dispatch(calendarArrayChange([...getCalendar(currentDay.years, day.months)]))
-        // setCalendar([...getCalendar(currentDay.get('year'), day.get('month'))])
+        dispatch(
+          calendarArrayChange([...getCalendar(currentDay.years, day.months)]),
+        )
         //配置好日期跳转到日试图
         setSelectByDate('date')
         break
       case 'years':
-        if (day.years === currentDay.years) {
-          dispatch(currentDayChange({ ...currentDay, years: day.years}))
-        } else { 
-          dispatch(currentDayChange({...currentDay,years:day.years,months:undefined,date:undefined}))
-        }
-        // setCurrentDay(dayjs().set('year', day.get('year')))
+        dispatch(currentDayChange({ ...currentDay, years: day.years }))
+        console.log('years first', day)
+
+        //重新配置日历数据
+        dispatch(calendarArrayChange(recentMonth(day)))
         //配置好日期跳转到月试图
         setSelectByDate('months')
         break
@@ -95,36 +99,116 @@ const Calendar = memo(() => {
   }
 
   //切换上一个月/下一个月日历
-  function aroundHandle (type) {
-    
-    switch (type) {
-      case 'left':
-        //获取减去后的日期
-        const subDay = dayjs(currentDay).subtract(1, 'month')
-        //重新获取日历数据并保存
-        dispatch(calendarArrayChange([...getCalendar(subDay.get('year'), subDay.get('month'))]))
-        // setCalendar([...getCalendar(subDay.get('year'), subDay.get('month'))])
+  function aroundHandle(type) {
+    //获取减去后的日期
+    let date = null
+    //重新获取日历数据并保存
+    switch (selectByDate) {
+      case 'date':
+        date = dateCalculationHandle(type)
+
+        //修改日历数据
+        dispatch(
+          calendarArrayChange([
+            ...getCalendar(date.get('year'), date.get('month')),
+          ]),
+        )
         //修改当前日期
-        // setCurrentDay(currentDay.subtract(1, 'month'))
-        dispatch(currentDayChange({...currentDay,years:subDay.get('year'),months:subDay.get('month')}))
+        if (
+          date.get('year') === today.years &&
+          date.get('month') === today.months
+        ) {
+          dispatch(
+            currentDayChange({
+              ...currentDay,
+              years: date.get('year'),
+              months: date.get('month'),
+              date: today.date,
+            }),
+          )
+        } else {
+          dispatch(
+            currentDayChange({
+              ...currentDay,
+              years: date.get('year'),
+              months: date.get('month'),
+              date: undefined,
+            }),
+          )
+        }
         break
-      case 'right':
-        const addDay = dayjs(currentDay).add(1, 'month')
-        dispatch(calendarArrayChange([...getCalendar(addDay.get('year'), addDay.get('month'))]))
-        // setCalendar([...getCalendar(addDay.get('year'), addDay.get('month'))])
-        // setCurrentDay(currentDay.add(1, 'month'))
-        dispatch(currentDayChange({...currentDay,years:addDay.get('year'),months:addDay.get('month')}))
+      case 'months':
+        date = dateCalculationHandle(type)
+
+        dispatch(calendarArrayChange(recentMonth(date.toObject())))
+        dispatch(
+          currentDayChange({
+            ...currentDay,
+            years: date.get('year'),
+          }),
+        )
+        break
+      case 'years':
+        date = dateCalculationHandle(type)
+
+        dispatch(calendarArrayChange(recentYears(date.toObject())))
+
+        dispatch(
+          currentDayChange({
+            ...currentDay,
+            years: date.get('year'),
+          }),
+        )
+
         break
     }
   }
 
+  /* 计算日期  */
+  function dateCalculationHandle(type) {
+    //获取减去后的日期
+    let dateResult = null
+
+    if (type === 'left') {
+      switch (selectByDate) {
+        case 'date':
+          //修改日历数据
+          dateResult = dayjs(currentDay).subtract(1, 'month')
+          break
+
+        case 'months':
+          dateResult = dayjs(currentDay).subtract(1, 'year')
+          break
+        case 'years':
+          dateResult = dayjs(currentDay).subtract(12, 'year')
+          break
+      }
+    } else {
+      switch (selectByDate) {
+        case 'date':
+          //修改日历数据
+          dateResult = dayjs(currentDay).add(1, 'month')
+          break
+
+        case 'months':
+          dateResult = dayjs(currentDay).add(1, 'year')
+          break
+        case 'years':
+          dateResult = dayjs(currentDay).add(12, 'year')
+          break
+      }
+    }
+
+    return dateResult
+  }
   //修改日期选择模式
   function changesSelectByDate(mode) {
     setSelectByDate(mode)
-
-    dispatch(calendarArrayChange(recentYears(currentDay)))
-
-    // setCalendar(recentYears(currentDay))
+    if (mode === 'years') {
+      dispatch(calendarArrayChange(recentYears(today)))
+    } else if (mode === 'months') {
+      dispatch(calendarArrayChange(recentMonth(currentDay)))
+    }
   }
 
   return (
@@ -153,9 +237,7 @@ const Calendar = memo(() => {
         dayElClickHandle={dayElClickHandle}
         selectByDate={selectByDate}
         today={today}
-      >
-        {' '}
-      </DateList>
+      ></DateList>
     </CalendarWrapper>
   )
 })

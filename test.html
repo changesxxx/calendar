@@ -5,6 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs/dayjs.min.js"></script>
+
 </head>
 
 
@@ -41,34 +43,29 @@
 
 
     <script>
-      const calendarArray = [
-        [0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0],
-      ]
+      function recentYears (day) {
+        const yearArray = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
 
+        let count = 1
 
-      function fillCalendarArray () {
-        //填充天数
-        calendarArray.forEach((week) => {
-          for (let index = 0; index < week.length; index++) {
-            week[index] = { name: index }
+        const startYeat = dayjs().subtract(5, 'year')
+        console.log(startYeat)
+
+        //填充月或年
+        yearArray.forEach((el) => {
+          for (let index = 0; index <= 3; index++) {
+            el[index] = startYeat
+              .add(count, 'year')
+            // .set('month', count - 1)
+            count += 1
           }
         })
 
-
-        return calendarArray
+        console.log(yearArray)
+        return yearArray
       }
 
-      fillCalendarArray()
-      console.log(calendarArray)
-
-
-      fillCalendarArray()
-
-      console.log(calendarArray)
+      console.log(recentYears({ years: 2024 }))
 
 
     </script>

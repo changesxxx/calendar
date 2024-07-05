@@ -47,6 +47,12 @@ const dateListWrapper = styled.div`
   }
 
   .active {
+    font-weight: 700;
+
+    border: 0.125rem solid var(--minor-color);
+  }
+
+  .selected {
     color: #333;
     font-weight: 700;
 

@@ -2,30 +2,25 @@ import React, { memo, useEffect } from 'react'
 
 import { useSelector, shallowEqual } from 'react-redux'
 
-import {getTodayIndex} from '@/utils/date_handle'
+import { getTodayIndex } from '@/utils/date_handle'
 
 import classnames from 'classnames'
-
 
 import DateListWrapper from './style'
 
 const DateList = memo((props) => {
   const dayOfWeek = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
 
-  const {
-    calendarArray,
-    dayElClickHandle,
-    selectByDate,
-  } = props
+  const { calendarArray, dayElClickHandle, selectByDate } = props
 
-   //store数据
-   const { currentDay} = useSelector(
+  //store数据
+  const { currentDay, today } = useSelector(
     (state) => ({
-       currentDay: state.date.currentDay,
+      currentDay: state.date.currentDay,
+      today: state.date.today,
     }),
     shallowEqual,
   )
-
 
   useEffect(() => {
     // console.log('calendarArray:', calendarArray)
@@ -34,16 +29,30 @@ const DateList = memo((props) => {
   function activeHandle(d) {
     let flag = false
 
+    if (selectByDate === 'date') {
+      flag =
+        currentDay.date === d.date &&
+        currentDay.months === d.months &&
+        currentDay.years === d.years
+    }
 
+    return flag
+  }
+
+  function selectedHandle(d) {
+    let flag = false
     switch (selectByDate) {
       case 'date':
-        flag = currentDay.date === d.date && currentDay.months === d.months
+        flag =
+          today.date === d.date &&
+          today.months === d.months &&
+          today.years === d.years
         break
       case 'months':
-        flag = currentDay.months === d.months
+        flag = today.months === d.months && today.years === d.years
         break
       case 'years':
-        flag = currentDay.years === d.years
+        flag = today.years === d.years
         break
     }
 
@@ -54,18 +63,17 @@ const DateList = memo((props) => {
   function dayListElHandle() {
     return calendarArray.map((week, index) => {
       let weekClass = classnames('day-of-week', {
-        'week-active': selectByDate ==='date' && getTodayIndex(currentDay) === index,
+        'week-active':
+          selectByDate === 'date' && getTodayIndex(currentDay) === index,
       })
 
       return (
         <div key={index} className={weekClass}>
           {week.map((d, index) => {
-
             let dayClass = 'day'
 
-
             if (currentDay.date === d.date && currentDay.months === d.months) {
-              dayClass += ' active'
+              dayClass += ' selected'
             }
 
             if (currentDay.months !== d.months) {
@@ -74,7 +82,10 @@ const DateList = memo((props) => {
 
             return (
               <span
-                className={classnames('day', { active: activeHandle(d) })}
+                className={classnames('day', {
+                  selected: selectedHandle(d),
+                  active: activeHandle(d),
+                })}
                 key={index}
                 onClick={(e) => {
                   dayElClickHandle(d)

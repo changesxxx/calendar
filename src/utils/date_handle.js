@@ -64,6 +64,8 @@ export function getToday() {
 }
 
 export function getTodayIndex(today) {
+  // console.log('getTodayIndex', today)
+
   const index = calendarArray.findIndex((w) =>
     w.some((d) => d.date === today.date && d.months === today.months),
   )
@@ -87,8 +89,6 @@ export function getDayByFormatMonth(day) {
     'December',
   ]
 
-  console.log('getDayByFormatMonth', day)
-
   return months[day.months]
 }
 
@@ -101,21 +101,39 @@ export function recentYears(day) {
   let count = 1
 
   const startYeat = dayjs(day).subtract(5, 'year')
+  console.log(day, startYeat)
 
   //填充月或年
   yearArray.forEach((el) => {
     for (let index = 0; index <= 3; index++) {
       el[index] = startYeat
         .add(count, 'year')
-        .set('month', count - 1)
+        // .set('month', count - 1)
         .toObject()
       count += 1
     }
   })
 
   console.log(yearArray)
-
   return yearArray
+}
+
+export function recentMonth(day) {
+  const monthArray = _.times(3, () => _.times(4, () => 0))
+  let count = 1
+
+  //填充月或年
+  monthArray.forEach((el) => {
+    for (let index = 0; index <= 3; index++) {
+      el[index] = dayjs()
+        .set('year', day.years)
+        .set('month', count - 1)
+        .toObject()
+      count += 1
+    }
+  })
+
+  return monthArray
 }
 
 export default dayjs
