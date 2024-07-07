@@ -1,4 +1,4 @@
-import React, { memo, useEffect } from 'react'
+import React, { memo, useEffect,useState } from 'react'
 
 import { useSelector, shallowEqual } from 'react-redux'
 
@@ -14,13 +14,16 @@ const DateList = memo((props) => {
   const { calendarArray, dayElClickHandle, selectByDate } = props
 
   //store数据
-  const { currentDay, today } = useSelector(
+  const { currentDay, today,selectedDay } = useSelector(
     (state) => ({
       currentDay: state.date.currentDay,
       today: state.date.today,
+      selectedDay:state.date.selectedDay
+      
     }),
     shallowEqual,
   )
+
 
   useEffect(() => {
     // console.log('calendarArray:', calendarArray)
@@ -31,9 +34,9 @@ const DateList = memo((props) => {
 
     if (selectByDate === 'date') {
       flag =
-        currentDay.date === d.date &&
-        currentDay.months === d.months &&
-        currentDay.years === d.years
+      selectedDay.date === d.date &&
+      selectedDay.months === d.months &&
+      selectedDay.years === d.years
     }
 
     return flag
@@ -64,7 +67,7 @@ const DateList = memo((props) => {
     return calendarArray.map((week, index) => {
       let weekClass = classnames('day-of-week', {
         'week-active':
-          selectByDate === 'date' && getTodayIndex(currentDay) === index,
+          selectByDate === 'date' && getTodayIndex(selectedDay) === index,
       })
 
       return (
@@ -72,11 +75,11 @@ const DateList = memo((props) => {
           {week.map((d, index) => {
             let dayClass = 'day'
 
-            if (currentDay.date === d.date && currentDay.months === d.months) {
+            if (selectedDay.date === d.date && selectedDay.months === d.months) {
               dayClass += ' selected'
             }
 
-            if (currentDay.months !== d.months) {
+            if (selectedDay.months !== d.months) {
               dayClass += ' obsolete'
             }
 

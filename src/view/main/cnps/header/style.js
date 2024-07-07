@@ -89,6 +89,7 @@ const headerWrapper = styled.div`
         margin-right: 0;
       }
     }
+
     .active {
       color: #fff;
       background-color: var(--minor-dark-color);

@@ -92,6 +92,20 @@ export function getDayByFormatMonth(day) {
   return months[day.months]
 }
 
+export function getDayByFormatWeek(index) {
+  const weeks = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
+  ]
+
+  return weeks[index]
+}
+
 /* 
   获取最近的年份 点击年时展现的列表数据
 */
