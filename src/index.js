@@ -2,6 +2,9 @@ import React from 'react'
 
 import ReactDOM from 'react-dom/client'
 
+//router
+import { BrowserRouter } from 'react-router-dom'
+
 //css重置
 import 'normalize.css'
 import '@/assets/css/index.css'
@@ -16,6 +19,8 @@ const root = ReactDOM.createRoot(document.getElementById('root'))
 
 root.render(
   <Provider store={store}>
-    <App />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </Provider>,
 )

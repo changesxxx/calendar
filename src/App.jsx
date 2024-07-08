@@ -1,15 +1,17 @@
 import React, { memo } from 'react'
 
+import { useRoutes } from 'react-router-dom'
+import routes from '@/router'
+
 import AppWrapper from './style'
 import Menu from './view/menu/Menu'
-import Main from './view/main/Main'
 
 const App = memo(() => {
   return (
     <AppWrapper>
       <div className="main">
         <Menu></Menu>
-        <Main></Main>
+        {useRoutes(routes)}
       </div>
     </AppWrapper>
   )
