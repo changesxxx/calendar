@@ -1,6 +1,5 @@
 class Cache {
   getItem(key) {
-    debugger
     if (key instanceof Object || Array.isArray(key)) {
       key = JSON.stringify(key)
     }

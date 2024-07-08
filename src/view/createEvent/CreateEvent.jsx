@@ -4,6 +4,8 @@ import EventWrapper from './style'
 
 import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 
+import {categoryListChange} from '@/store/modules/event'
+
 import { GrCheckmark } from 'react-icons/gr'
 import { IoIosArrowDown } from 'react-icons/io'
 import { IoIosArrowUp } from 'react-icons/io'
@@ -30,6 +32,9 @@ const CreateEvent = memo(() => {
     shallowEqual,
   )
 
+  const dispatch = useDispatch()
+  
+
   //选中的标签颜色
   const [currentColor, setCurrentColor] = useState(0)
   //展示下拉选项
@@ -42,6 +47,8 @@ const CreateEvent = memo(() => {
 
   //当前类型名称
   const [categoryTitle, setCategoryTitle] = useState()
+
+
 
   function colorItemHandle(index) {
     setCurrentColor(index)
@@ -66,10 +73,31 @@ const CreateEvent = memo(() => {
     setCurrentCategory(index)
     //修改类型名称内容
     setCategoryTitle(categoryList[index].title)
+
   }
 
-  function categoryItemInputHandle(e) {
+  //保存标签修改
+  function categoryItemInputHandle (e, index) {
+    
     setCategoryTitle(e.target.value)
+
+  }
+
+  function inputBlurHandle (e, index) { 
+    const newCategoryList = categoryList.map((category, i) => { 
+      let newCategory = {}
+      
+      if (index === i) {
+        newCategory = {title:e.target.value,color:category.color}
+      } else { 
+        newCategory = {title:category.title,color:category.color}
+      }
+      return newCategory
+    })
+    
+    dispatch(categoryListChange([...newCategoryList]))
+    
+    setCurrentCategory(-1)
   }
 
   return (
@@ -154,7 +182,7 @@ const CreateEvent = memo(() => {
 
             {categoryShow && (
               <div className="category-list">
-                <>
+                <div className='item-container'>
                   {!categoryList && (
                     <div>
                       There is currently no calendar type available, please add
@@ -167,10 +195,12 @@ const CreateEvent = memo(() => {
                       if (currentCategory === index) {
                         return (
                           <input
-                            key={category}
+                            key={category.title}
                             value={categoryTitle}
                             className="category-item-input"
-                            onChange={(e) => categoryItemInputHandle(e)}
+                            onChange={(e) => categoryItemInputHandle(e, index)}
+                            onBlur={e => inputBlurHandle(e,index)}
+                            autoFocus
                           ></input>
                         )
                       } else {
@@ -178,7 +208,7 @@ const CreateEvent = memo(() => {
                           <span
                             style={{ backgroundColor: `${category.color}` }}
                             className="category-item"
-                            key={category}
+                            key={category.title}
                             onDoubleClick={(e) => categoryItemHandle(e, index)}
                           >
                             {category.title}
@@ -186,10 +216,11 @@ const CreateEvent = memo(() => {
                         )
                       }
                     })}
-                </>
-                <button className="add" onClick={(e) => addCategoryHandle(e)}>
+                </div>
+                <div className='btn-container'> <button className="add" onClick={(e) => addCategoryHandle(e)}>
                   add category
-                </button>
+                </button></div>
+               
               </div>
             )}
           </div>

@@ -120,23 +120,43 @@ const eventWrapper = styled.div`
 
         background-color: red;
 
-        .category-item {
-          display: block;
-          padding: 0.375rem 0.625rem;
-          margin-right: 0.375rem;
+        .item-container {
+          display: flex;
+          flex: 1;
+          align-items: center;
+          flex-wrap: wrap;
 
-          border-radius: 0.25rem;
+          padding: 0 1rem;
+
+          .category-item {
+            padding: 0.375rem 0.625rem;
+            margin-right: 0.375rem;
+            margin-top: 0.875rem;
+
+            border-radius: 0.25rem;
+          }
+
+          .category-item-input {
+            padding: 0 0.75rem;
+            margin-right: 0.625rem;
+            margin-top: 0.875rem;
+          }
         }
 
-        .add {
-          font-size: Outfit-ExtraLight;
-          padding: 0.5rem;
-          border-radius: 0.375rem;
+        .btn-container {
+          display: flex;
+          align-items: center;
 
-          color: #fff;
-          background-color: #178fff;
+          .add {
+            font-size: Outfit-ExtraLight;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
 
-          cursor: pointer;
+            color: #fff;
+            background-color: #178fff;
+
+            cursor: pointer;
+          }
         }
       }
     }
