@@ -1,10 +1,10 @@
-import React, { memo, useState } from 'react'
+import React, { memo, useState, useEffect, useRef } from 'react'
 
 import EventWrapper from './style'
 
 import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 
-import {categoryListChange} from '@/store/modules/event'
+import { categoryListChange } from '@/store/modules/event'
 
 import { GrCheckmark } from 'react-icons/gr'
 import { IoIosArrowDown } from 'react-icons/io'
@@ -32,23 +32,35 @@ const CreateEvent = memo(() => {
     shallowEqual,
   )
 
+  //缓存中categoryList发生变法 页面category需重新赋值并加载页面
+  useEffect(() => {
+    setCategory(categoryList)
+  }, [categoryList])
+
   const dispatch = useDispatch()
-  
+
+  const [category, setCategory] = useState(categoryList)
 
   //选中的标签颜色
   const [currentColor, setCurrentColor] = useState(0)
   //展示下拉选项
   const [categoryShow, setCategoryShow] = useState(false)
-  //输入框内容
-  const [inputValue, setInputValue] = useState('')
 
   //当前类型index
   const [currentCategory, setCurrentCategory] = useState(-1)
 
   //当前类型名称
   const [categoryTitle, setCategoryTitle] = useState()
+  //当前类型颜色
+  const [categoryColor, setCategoryColor] = useState()
 
+  //当前输入input
+  const inputRef = useRef()
 
+  //选中的标签
+  const [selectedCategory, setSelectedCategory] = useState([])
+
+  //inputValue数据发生变化 页面category需重新赋值并加载页面
 
   function colorItemHandle(index) {
     setCurrentColor(index)
@@ -57,46 +69,96 @@ const CreateEvent = memo(() => {
   function categoryShowHandle(e, flag) {
     e.stopPropagation()
     setCategoryShow(flag)
+  }
 
-    if (!flag) {
-      setInputValue('')
+  //添加类型事件
+  function addCategoryHandle(e) {
+    e.stopPropagation()
+
+    const event = { title: '', color: '#fff' }
+    const newList = [...category, event]
+
+    //重新设置页面Category数据
+    setCategory(newList)
+
+    //修改类型标签index
+    setCurrentCategory(newList.length - 1)
+    //修改类型名称内容
+    setCategoryTitle('')
+    //修改当前颜色
+    setCategoryColor('#ffffff')
+  }
+
+  //span单击事件 将点击的类型标签添加至容器内展示
+  function categoryItemClickHandle(e, index) {
+    e.stopPropagation()
+    console.log(index)
+    //赋值操作
+    const newSelectedCategory = {}
+    newSelectedCategory.id = index
+    newSelectedCategory.title = category[index].title
+    newSelectedCategory.color = category[index].color
+
+    const flag = selectedCategory.find((category) => category.id === index)
+
+    if (flag) {
+      return
+    } else {
+      setSelectedCategory([...selectedCategory, newSelectedCategory])
     }
   }
 
-  function addCategoryHandle(e) {
-    e.stopPropagation()
-  }
-
-  function categoryItemHandle(e, index) {
-    console.log('categoryItemHandle', e, index)
+  //span双击事件 to input
+  function categoryItemHandle(index) {
     //修改类型标签index
     setCurrentCategory(index)
     //修改类型名称内容
-    setCategoryTitle(categoryList[index].title)
-
+    setCategoryTitle(category[index].title)
+    //修改当前颜色
+    setCategoryColor(category[index].color)
   }
 
   //保存标签修改
-  function categoryItemInputHandle (e, index) {
-    
-    setCategoryTitle(e.target.value)
-
+  function categoryItemInputHandle(e, attributeName) {
+    if (attributeName === 'title') {
+      setCategoryTitle(e.target.value)
+    } else {
+      setCategoryColor(e.target.value)
+    }
   }
 
-  function inputBlurHandle (e, index) { 
-    const newCategoryList = categoryList.map((category, i) => { 
+  function inputBlurHandle(e) {
+    //处理父元素点击后触发此事件
+    if (currentCategory === -1) {
+      return
+    }
+
+    if (inputRef.current.value === '') {
+      console.error('值不能为空')
+      return
+    }
+
+    if (
+      category[currentCategory].title === inputRef.current.value &&
+      category[currentCategory].color === categoryColor
+    ) {
+      setCurrentCategory(-1)
+      return
+    }
+
+    const newCategoryList = category.map((category, i) => {
       let newCategory = {}
-      
-      if (index === i) {
-        newCategory = {title:e.target.value,color:category.color}
-      } else { 
-        newCategory = {title:category.title,color:category.color}
+
+      if (currentCategory === i) {
+        newCategory = { title: categoryTitle, color: categoryColor }
+      } else {
+        newCategory = { title: category.title, color: category.color }
       }
       return newCategory
     })
-    
+
     dispatch(categoryListChange([...newCategoryList]))
-    
+
     setCurrentCategory(-1)
   }
 
@@ -147,18 +209,31 @@ const CreateEvent = memo(() => {
           </div>
         </div>
 
-        <div className="category" onClick={(e) => e.stopPropagation()}>
+        <div className="category">
           <h4>Select category</h4>
-          <div className="category-container">
-            <input
+          <div
+            className="category-container"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
               type="text"
               id="category"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
               onClick={(e) => {
                 categoryShowHandle(e, true)
               }}
-            ></input>
+            >
+              {selectedCategory.map((category) => {
+                return (
+                  <span
+                    key={category.title}
+                    className="selected-item"
+                    style={{ backgroundColor: `${category.color}` }}
+                  >
+                    {category.title}
+                  </span>
+                )
+              })}
+            </div>
             {!categoryShow && (
               <label
                 htmlFor="category"
@@ -181,35 +256,63 @@ const CreateEvent = memo(() => {
             )}
 
             {categoryShow && (
-              <div className="category-list">
-                <div className='item-container'>
-                  {!categoryList && (
+              <div
+                className="category-list"
+                onClick={(e) => inputBlurHandle(e)}
+              >
+                <div className="item-container">
+                  {!category && (
                     <div>
                       There is currently no calendar type available, please add
                       one first...
                     </div>
                   )}
 
-                  {categoryList &&
-                    categoryList.map((category, index) => {
+                  {category &&
+                    category.map((category, index) => {
                       if (currentCategory === index) {
                         return (
-                          <input
+                          <div
                             key={category.title}
-                            value={categoryTitle}
                             className="category-item-input"
-                            onChange={(e) => categoryItemInputHandle(e, index)}
-                            onBlur={e => inputBlurHandle(e,index)}
-                            autoFocus
-                          ></input>
+                          >
+                            <input
+                              value={categoryTitle}
+                              className="input-title"
+                              onChange={(e) =>
+                                categoryItemInputHandle(e, 'title')
+                              }
+                              // onBlur={(e) => inputBlurHandle(e, index)}
+                              ref={inputRef}
+                              autoFocus
+                              //单击事件阻止冒泡 防止触发父元素的单击事件
+                              onClick={(e) => e.stopPropagation()}
+                            ></input>
+
+                            <input
+                              type="color"
+                              className="input-color"
+                              value={categoryColor}
+                              onChange={(e) => {
+                                categoryItemInputHandle(e, 'color')
+                              }}
+                              //单击事件阻止冒泡 防止触发父元素的单击事件
+                              onClick={(e) => e.stopPropagation()}
+                              // style={{ backgroundColor: `${category.color}` }}
+                            ></input>
+                          </div>
                         )
                       } else {
                         return (
                           <span
                             style={{ backgroundColor: `${category.color}` }}
                             className="category-item"
-                            key={category.title}
-                            onDoubleClick={(e) => categoryItemHandle(e, index)}
+                            key={category.title + index}
+                            onDoubleClick={(e) => categoryItemHandle(index)}
+                            //单击事件阻止冒泡 防止触发父元素的单击事件
+                            onClick={(e) => {
+                              categoryItemClickHandle(e, index)
+                            }}
                           >
                             {category.title}
                           </span>
@@ -217,10 +320,11 @@ const CreateEvent = memo(() => {
                       }
                     })}
                 </div>
-                <div className='btn-container'> <button className="add" onClick={(e) => addCategoryHandle(e)}>
-                  add category
-                </button></div>
-               
+                <div className="btn-container">
+                  <button className="add" onClick={(e) => addCategoryHandle(e)}>
+                    add category
+                  </button>
+                </div>
               </div>
             )}
           </div>

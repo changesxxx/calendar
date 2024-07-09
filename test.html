@@ -6,61 +6,40 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
 </head>
-
 <style>
   .box {
-
+    display: flex;
     width: 400px;
-    height: 400px;
-    background-color: saddlebrown;
-  }
+    height: 200px;
 
-  .content {
-    /* display: block; */
-    width: auto;
-    height: auto;
-    padding: 20px;
-
-
-
-    background-color: salmon;
-  }
-
-  input {
-    background: none;
-    outline: none;
-    border: none;
-
-    cursor: pointer;
+    background-color: skyblue;
   }
 </style>
 
 <body>
 
 
+
   <div class="box">
-    <input type="text" class="content" id="input" value="123123"></input>
+
+    <input type="text">
+
   </div>
+
+  <input type="color" value="#e66465">
 
 
   <script>
 
-    const box = document.querySelectorAll('.box')[0]
-    const content = document.querySelectorAll('.content')[0]
-    content.readOnly = true
+    const arr = [{ id: 1, name: 1 }]
+
+    const flag = arr.findIndex(a => a.id === 2)
 
 
-    content.addEventListener('dblclick', function (e) {
-      e.stopPropagation()
-      content.readOnly = false
-    })
-
-
-
+    console.log(flag)
 
 
   </script>
-
 </body>
 
 </html>
