@@ -9,6 +9,9 @@ import { categoryListChange } from '@/store/modules/event'
 import { GrCheckmark } from 'react-icons/gr'
 import { IoIosArrowDown } from 'react-icons/io'
 import { IoIosArrowUp } from 'react-icons/io'
+import { RxCrossCircled } from 'react-icons/rx'
+
+import dayjs from '@/utils/date_handle'
 
 const CreateEvent = memo(() => {
   const color = [
@@ -60,6 +63,15 @@ const CreateEvent = memo(() => {
   //选中的标签
   const [selectedCategory, setSelectedCategory] = useState([])
 
+  //当前点击的标签
+  const [currentSelectedCategory, setCurrentSelectedCategory] = useState(-1)
+
+  //处理双击事件触发单击事件
+  const timer = useRef(null)
+
+  //开始时间input元素
+  const startDateInputRef = useRef(null)
+
   //inputValue数据发生变化 页面category需重新赋值并加载页面
 
   function colorItemHandle(index) {
@@ -89,27 +101,56 @@ const CreateEvent = memo(() => {
     setCategoryColor('#ffffff')
   }
 
+  //selected-item按钮单击事件
+  function selectedItemClick(e, index) {
+    console.log('selected-item按钮单击事件')
+    e.stopPropagation()
+
+    setCurrentSelectedCategory(index)
+  }
+  //selected-item按钮删除事件
+  function selectedItemDelete(e, index) {
+    e.stopPropagation()
+
+    const newSelectedCategory = selectedCategory.filter((s, i) => i !== index)
+    setSelectedCategory([...newSelectedCategory])
+
+    setCurrentSelectedCategory(-1)
+  }
+
   //span单击事件 将点击的类型标签添加至容器内展示
   function categoryItemClickHandle(e, index) {
+    console.log('单击事件..')
+
+    clearTimeout(timer.current)
+
     e.stopPropagation()
-    console.log(index)
-    //赋值操作
-    const newSelectedCategory = {}
-    newSelectedCategory.id = index
-    newSelectedCategory.title = category[index].title
-    newSelectedCategory.color = category[index].color
 
-    const flag = selectedCategory.find((category) => category.id === index)
+    function execute() {
+      //赋值操作
+      const newSelectedCategory = {}
+      newSelectedCategory.id = index
+      newSelectedCategory.title = category[index].title
+      newSelectedCategory.color = category[index].color
 
-    if (flag) {
-      return
-    } else {
-      setSelectedCategory([...selectedCategory, newSelectedCategory])
+      const flag = selectedCategory.find((category) => category.id === index)
+
+      if (flag) {
+        return
+      } else {
+        setSelectedCategory([...selectedCategory, newSelectedCategory])
+      }
     }
+
+    timer.current = setTimeout(execute, 230)
   }
 
   //span双击事件 to input
-  function categoryItemHandle(index) {
+  function categoryItemHandle(e, index) {
+    console.log('双击事件..')
+    clearTimeout(timer.current)
+    e.stopPropagation()
+
     //修改类型标签index
     setCurrentCategory(index)
     //修改类型名称内容
@@ -127,6 +168,7 @@ const CreateEvent = memo(() => {
     }
   }
 
+  //输入框失焦后保存数据
   function inputBlurHandle(e) {
     //处理父元素点击后触发此事件
     if (currentCategory === -1) {
@@ -159,6 +201,12 @@ const CreateEvent = memo(() => {
 
     dispatch(categoryListChange([...newCategoryList]))
 
+    //假如框内已经展示了标签然后进行修改要对上面展示的标签做更新处理
+    const sc = selectedCategory.find((c) => c.id === currentCategory)
+    if (sc) {
+      sc.title = inputRef.current.value
+      sc.color = categoryColor
+    }
     setCurrentCategory(-1)
   }
 
@@ -216,19 +264,27 @@ const CreateEvent = memo(() => {
             onClick={(e) => e.stopPropagation()}
           >
             <div
-              type="text"
               id="category"
               onClick={(e) => {
                 categoryShowHandle(e, true)
               }}
             >
-              {selectedCategory.map((category) => {
+              {selectedCategory.map((category, index) => {
                 return (
                   <span
                     key={category.title}
                     className="selected-item"
                     style={{ backgroundColor: `${category.color}` }}
+                    onClick={(e) => {
+                      selectedItemClick(e, index)
+                    }}
                   >
+                    {index === currentSelectedCategory && (
+                      <RxCrossCircled
+                        className="cross"
+                        onClick={(e) => selectedItemDelete(e, index)}
+                      ></RxCrossCircled>
+                    )}
                     {category.title}
                   </span>
                 )
@@ -237,6 +293,7 @@ const CreateEvent = memo(() => {
             {!categoryShow && (
               <label
                 htmlFor="category"
+                className="category-label"
                 onClick={(e) => {
                   categoryShowHandle(e, true)
                 }}
@@ -247,6 +304,7 @@ const CreateEvent = memo(() => {
             {categoryShow && (
               <label
                 htmlFor="category"
+                className="category-label"
                 onClick={(e) => {
                   categoryShowHandle(e, false)
                 }}
@@ -282,7 +340,6 @@ const CreateEvent = memo(() => {
                               onChange={(e) =>
                                 categoryItemInputHandle(e, 'title')
                               }
-                              // onBlur={(e) => inputBlurHandle(e, index)}
                               ref={inputRef}
                               autoFocus
                               //单击事件阻止冒泡 防止触发父元素的单击事件
@@ -308,7 +365,7 @@ const CreateEvent = memo(() => {
                             style={{ backgroundColor: `${category.color}` }}
                             className="category-item"
                             key={category.title + index}
-                            onDoubleClick={(e) => categoryItemHandle(index)}
+                            onDoubleClick={(e) => categoryItemHandle(e, index)}
                             //单击事件阻止冒泡 防止触发父元素的单击事件
                             onClick={(e) => {
                               categoryItemClickHandle(e, index)
@@ -327,6 +384,24 @@ const CreateEvent = memo(() => {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+
+        <div className="event-date">
+          <div className="start-date">
+            <h4>Start Date</h4>
+            <div className="input-container">
+              <input
+                type="datetime-local"
+                min={dayjs().format('YYYY-MM-DDTHH:mm')}
+              />
+            </div>
+          </div>
+          <div className="end-date">
+            <h4>End Date</h4>
+            <div className="input-container">
+              <input type="datetime-local" />
+            </div>
           </div>
         </div>
       </div>

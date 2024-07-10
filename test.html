@@ -5,41 +5,69 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs/dayjs.min.js"></script>
 </head>
 <style>
   .box {
-    display: flex;
-    width: 400px;
+    width: 200px;
     height: 200px;
+    background-color: saddlebrown;
 
-    background-color: skyblue;
+    margin: 200px auto;
   }
 </style>
 
 <body>
 
 
+  <div class="box"></div>
 
-  <div class="box">
-
-    <input type="text">
-
-  </div>
-
-  <input type="color" value="#e66465">
+  <input type="datetime-local" min="2024-07-09T18:30">
 
 
   <script>
 
-    const arr = [{ id: 1, name: 1 }]
+    //2024-07-09T10:00
+    console.log(dayjs().format("YYYY-MM-DDTHH:mm"))
 
-    const flag = arr.findIndex(a => a.id === 2)
+    const box = document.querySelectorAll(".box")[0]
+
+    let timer = null;
 
 
-    console.log(flag)
+    function clickFn () {
+
+      console.log(timer)
+
+      clearTimeout(timer)
+
+      function execute () {
+        console.log('click')
+      }
+
+      timer = setTimeout(execute, 250)
+
+
+    }
+
+    function dbClickFn () {
+      clearTimeout(timer)
+      console.log('dbclick')
+    }
+
+
+
+
+    box.addEventListener('click', clickFn)
+
+
+    box.addEventListener('dblclick', dbClickFn)
+
+
 
 
   </script>
+
 </body>
 
 </html>
