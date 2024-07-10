@@ -223,6 +223,7 @@ const eventWrapper = styled.div`
   .event-date {
     display: flex;
     margin-top: 1.25rem;
+    height: 7rem;
 
     .start-date,
     .end-date {
@@ -231,6 +232,27 @@ const eventWrapper = styled.div`
 
     .start-date {
       margin-right: 0.625rem;
+    }
+
+    .error-text {
+      margin-top: 0.75rem;
+      font-size: 0.875rem;
+      color: #ff6a00;
+    }
+  }
+
+  .submit-container {
+    height: 3.5rem;
+    line-height: 3.5rem;
+    text-align: right;
+
+    .submit {
+      padding: 0.75rem 1rem;
+
+      border-radius: 0.75rem;
+      background-color: #875ffa;
+
+      cursor: pointer;
     }
   }
 `

@@ -44,6 +44,11 @@ const CreateEvent = memo(() => {
 
   const [category, setCategory] = useState(categoryList)
 
+  //标题input
+  const titleInputRef = useRef()
+  const [title, setTitle] = useState()
+
+
   //选中的标签颜色
   const [currentColor, setCurrentColor] = useState(0)
   //展示下拉选项
@@ -69,11 +74,28 @@ const CreateEvent = memo(() => {
   //处理双击事件触发单击事件
   const timer = useRef(null)
 
+  //开始时间
+  const [startDate,setstartDate] = useState()
+  //结束时间
+  const [endDate,setEndDate] = useState()
+
+
   //开始时间input元素
   const startDateInputRef = useRef(null)
+  //结束时间input元素
+  const endDateInputRef = useRef(null)
+
+  //开始时间是否符合
+  const [startDateCorrect, setStartDateCorrect] = useState(true)
+  //结束时间是否符合
+  const [endDateCorrect, setEndDateCorrect] = useState(true)
+  
+
+  function titleInputHandle () { 
+    console.log(titleInputRef.current.value)
+  }
 
   //inputValue数据发生变化 页面category需重新赋值并加载页面
-
   function colorItemHandle(index) {
     setCurrentColor(index)
   }
@@ -210,6 +232,18 @@ const CreateEvent = memo(() => {
     setCurrentCategory(-1)
   }
 
+  //
+  function dateInputHandle (type) { 
+    if (type === 'start') {
+      //判断输入的日期是否在当前时间之后
+      setStartDateCorrect(dayjs(startDateInputRef.current.value).isAfter(dayjs()))
+    } else { 
+
+      setEndDateCorrect(dayjs(endDateInputRef.current.value).isAfter(dayjs().add(1,'minute')))
+    }
+
+  }
+
   return (
     <EventWrapper
       onClick={(e) => {
@@ -225,7 +259,7 @@ const CreateEvent = memo(() => {
           <h4>Title</h4>
 
           <div className="input-container">
-            <input type="text" placeholder="Enter event name..." />
+            <input type="text"  placeholder="Enter event name..."  value={title} onChange={e => titleInputHandle()} ref={titleInputRef}/>
           </div>
         </div>
         <div className="Description-title">
@@ -394,15 +428,32 @@ const CreateEvent = memo(() => {
               <input
                 type="datetime-local"
                 min={dayjs().format('YYYY-MM-DDTHH:mm')}
+                ref={startDateInputRef}
+                onChange={e => { dateInputHandle('start') }}
+                value={startDate}
               />
+              {!startDateCorrect && <p className='error-text'>Date format error, should be after the current time...</p> }
             </div>
           </div>
           <div className="end-date">
             <h4>End Date</h4>
             <div className="input-container">
-              <input type="datetime-local" />
+              <input type="datetime-local"
+                min={dayjs().add(1,'minute').format('YYYY-MM-DDTHH:mm')}
+                ref={endDateInputRef}
+                value={endDate}
+                onChange={e => {  dateInputHandle()}}
+              />
+
+              {!endDateCorrect && <p className='error-text'>The minimum time should be one minute more than the current time...</p> }
             </div>
           </div>
+        </div>
+
+
+        <div className="submit-container">
+
+          <button className='submit'>Submit</button>
         </div>
       </div>
     </EventWrapper>
