@@ -18,8 +18,10 @@ const eventWrapper = styled.div`
   }
 
   .input-container {
+    box-sizing: border-box;
     padding: 0.625rem 0.125rem;
     position: relative;
+    height: 4.5rem;
 
     input {
       box-sizing: border-box;
@@ -32,6 +34,12 @@ const eventWrapper = styled.div`
       border-radius: 0.375rem;
       background-color: #f8fafb;
     }
+  }
+
+  .error-text {
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
+    color: #ff6a00;
   }
 
   .event-from-container {
@@ -47,9 +55,11 @@ const eventWrapper = styled.div`
   }
 
   .event-title,
-  .Description-title,
+  .description-title,
   .label-colour {
-    margin-top: 1.375rem;
+    /* margin-top: 1.375rem; */
+
+    margin-top: 1rem;
   }
 
   .label-colour {
@@ -232,12 +242,6 @@ const eventWrapper = styled.div`
 
     .start-date {
       margin-right: 0.625rem;
-    }
-
-    .error-text {
-      margin-top: 0.75rem;
-      font-size: 0.875rem;
-      color: #ff6a00;
     }
   }
 

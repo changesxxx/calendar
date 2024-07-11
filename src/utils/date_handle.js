@@ -2,6 +2,8 @@ import dayjs from 'dayjs'
 import toObject from 'dayjs/plugin/toObject'
 import duration from 'dayjs/plugin/duration'
 import objectSupport from 'dayjs/plugin/objectSupport'
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 
 import _ from 'lodash'
 import cache from './cache'
@@ -11,6 +13,8 @@ const calendarArray = _.times(5, () => _.times(7, () => 0))
 dayjs.extend(toObject)
 dayjs.extend(duration)
 dayjs.extend(objectSupport)
+dayjs.extend(isSameOrBefore)
+dayjs.extend(isSameOrAfter)
 
 export function getCalendar(
   year = cache.getItem('date').year,

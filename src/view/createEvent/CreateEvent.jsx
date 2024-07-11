@@ -4,7 +4,9 @@ import EventWrapper from './style'
 
 import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 
-import { categoryListChange } from '@/store/modules/event'
+import { categoryListChange, eventListChange } from '@/store/modules/event'
+
+import { useNavigate } from 'react-router-dom'
 
 import { GrCheckmark } from 'react-icons/gr'
 import { IoIosArrowDown } from 'react-icons/io'
@@ -28,12 +30,15 @@ const CreateEvent = memo(() => {
     '#7a24ff',
   ]
 
-  const { categoryList } = useSelector(
+  const { categoryList, eventList } = useSelector(
     (state) => ({
       categoryList: state.event.categoryList,
+      eventList: state.event.eventList,
     }),
     shallowEqual,
   )
+
+  const navigate = useNavigate()
 
   //缓存中categoryList发生变法 页面category需重新赋值并加载页面
   useEffect(() => {
@@ -46,8 +51,12 @@ const CreateEvent = memo(() => {
 
   //标题input
   const titleInputRef = useRef()
-  const [title, setTitle] = useState()
+  const [title, setTitle] = useState('')
+  //标题是否符合规则
+  const [titleCorrect, setTitleCorrect] = useState(true)
 
+  //描述input
+  const [describe, setDescribe] = useState('')
 
   //选中的标签颜色
   const [currentColor, setCurrentColor] = useState(0)
@@ -75,10 +84,9 @@ const CreateEvent = memo(() => {
   const timer = useRef(null)
 
   //开始时间
-  const [startDate,setstartDate] = useState()
+  const [startDate, setstartDate] = useState('')
   //结束时间
-  const [endDate,setEndDate] = useState()
-
+  const [endDate, setEndDate] = useState('')
 
   //开始时间input元素
   const startDateInputRef = useRef(null)
@@ -89,10 +97,18 @@ const CreateEvent = memo(() => {
   const [startDateCorrect, setStartDateCorrect] = useState(true)
   //结束时间是否符合
   const [endDateCorrect, setEndDateCorrect] = useState(true)
-  
 
-  function titleInputHandle () { 
-    console.log(titleInputRef.current.value)
+  //选中的时间是否已经别的事件使用
+  const [isExist, setisExist] = useState(false)
+  const [endIsExist, setEndIsExist] = useState(false)
+
+  //title input内容改变
+  function titleInputHandle() {
+    setTitle(titleInputRef.current.value)
+
+    if (titleInputRef.current.value !== '') {
+      setTitleCorrect(true)
+    }
   }
 
   //inputValue数据发生变化 页面category需重新赋值并加载页面
@@ -232,16 +248,111 @@ const CreateEvent = memo(() => {
     setCurrentCategory(-1)
   }
 
-  //
-  function dateInputHandle (type) { 
+  //日期内容发生改变
+  function dateInputHandle(type) {
     if (type === 'start') {
       //判断输入的日期是否在当前时间之后
-      setStartDateCorrect(dayjs(startDateInputRef.current.value).isAfter(dayjs()))
-    } else { 
+      const correct = dayjs(startDateInputRef.current.value).isAfter(dayjs())
 
-      setEndDateCorrect(dayjs(endDateInputRef.current.value).isAfter(dayjs().add(1,'minute')))
+      setStartDateCorrect(correct)
+
+      if (correct) {
+        const flag = eventDateItExist(startDateInputRef.current.value)
+
+        setisExist(flag)
+
+        if (!flag) setstartDate(startDateInputRef.current.value)
+      }
+    } else {
+      const correct = dayjs(endDateInputRef.current.value).isAfter(
+        dayjs(startDate).add(1, 'minute'),
+      )
+      setEndDateCorrect(correct)
+
+      if (correct) {
+        const flag = eventDateItExist(endDateInputRef.current.value)
+
+        setEndIsExist(flag)
+
+        if (!flag) setEndDate(endDateInputRef.current.value)
+      } else {
+        setEndDate('')
+      }
+    }
+  }
+
+  //判断当前时间时间是否已经存在了别的事件
+  function eventDateItExist(date) {
+    let flag = false
+
+    if (!eventList.length > 0) {
+      return flag
     }
 
+    eventList.forEach((e) => {
+      flag =
+        dayjs(date).isSameOrAfter(e.startDate) &&
+        dayjs(date).isSameOrBefore(e.endDate)
+    })
+
+    return flag
+  }
+
+  //Submit事件
+  function submitHandle() {
+    //标题非空判断
+    if (titleInputRef.current.value === '') {
+      setTitleCorrect(false)
+      return
+    }
+
+    //事件类型
+    //起始日期非空判断
+    if (!startDate) {
+      setStartDateCorrect(false)
+      return
+    } else {
+      const correct = dayjs(startDateInputRef.current.value).isAfter(dayjs())
+
+      setStartDateCorrect(correct)
+
+      if (!correct || isExist) {
+        return
+      }
+    }
+
+    if (!endDate) {
+      setEndDateCorrect(false)
+    } else {
+      const correct = dayjs(endDateInputRef.current.value).isAfter(
+        dayjs().add(1, 'minute'),
+      )
+
+      setEndDateCorrect(correct)
+
+      if (!correct) {
+        return
+      }
+    }
+
+    //汇总数据
+    const event = {
+      //标题
+      title,
+      //描述
+      describe,
+      //事件卡片颜色
+      cardColor: color[currentColor],
+      //事件类型
+      categorys: selectedCategory,
+      startDate,
+      endDate,
+    }
+
+    dispatch(eventListChange([...eventList, event]))
+
+    //返回首页
+    navigate('/')
   }
 
   return (
@@ -259,13 +370,28 @@ const CreateEvent = memo(() => {
           <h4>Title</h4>
 
           <div className="input-container">
-            <input type="text"  placeholder="Enter event name..."  value={title} onChange={e => titleInputHandle()} ref={titleInputRef}/>
+            <input
+              type="text"
+              placeholder="Enter event name..."
+              value={title}
+              onChange={(e) => titleInputHandle()}
+              ref={titleInputRef}
+            />
+
+            {!titleCorrect && (
+              <p className="error-text">Title cannot be empty...</p>
+            )}
           </div>
         </div>
-        <div className="Description-title">
+        <div className="description-title">
           <h4>Description</h4>
           <div className="input-container">
-            <input type="text" placeholder="Enter description..." />
+            <input
+              type="text"
+              placeholder="Enter description..."
+              value={describe}
+              onChange={(e) => setDescribe(e.target.value)}
+            />
           </div>
         </div>
         <div className="label-colour">
@@ -290,7 +416,6 @@ const CreateEvent = memo(() => {
             })}
           </div>
         </div>
-
         <div className="category">
           <h4>Select category</h4>
           <div
@@ -420,7 +545,6 @@ const CreateEvent = memo(() => {
             )}
           </div>
         </div>
-
         <div className="event-date">
           <div className="start-date">
             <h4>Start Date</h4>
@@ -429,31 +553,58 @@ const CreateEvent = memo(() => {
                 type="datetime-local"
                 min={dayjs().format('YYYY-MM-DDTHH:mm')}
                 ref={startDateInputRef}
-                onChange={e => { dateInputHandle('start') }}
+                onChange={(e) => {
+                  dateInputHandle('start')
+                }}
                 value={startDate}
               />
-              {!startDateCorrect && <p className='error-text'>Date format error, should be after the current time...</p> }
+              {!startDateCorrect && (
+                <p className="error-text">
+                  Date format error, should be after the current time...
+                </p>
+              )}
+
+              {isExist && (
+                <p className="error-text">
+                  There have already been other events at this time...
+                </p>
+              )}
             </div>
           </div>
           <div className="end-date">
             <h4>End Date</h4>
             <div className="input-container">
-              <input type="datetime-local"
-                min={dayjs().add(1,'minute').format('YYYY-MM-DDTHH:mm')}
+              <input
+                type="datetime-local"
+                min={dayjs(startDate)
+                  .add(1, 'minute')
+                  .format('YYYY-MM-DDTHH:mm')}
                 ref={endDateInputRef}
                 value={endDate}
-                onChange={e => {  dateInputHandle()}}
+                onChange={(e) => {
+                  dateInputHandle()
+                }}
               />
 
-              {!endDateCorrect && <p className='error-text'>The minimum time should be one minute more than the current time...</p> }
+              {!endDateCorrect && (
+                <p className="error-text">
+                  The minimum time should be one minute more than the current
+                  time...
+                </p>
+              )}
+
+              {endIsExist && (
+                <p className="error-text">
+                  There have already been other events at this time...
+                </p>
+              )}
             </div>
           </div>
         </div>
-
-
         <div className="submit-container">
-
-          <button className='submit'>Submit</button>
+          <button className="submit" onClick={(e) => submitHandle()}>
+            Submit
+          </button>
         </div>
       </div>
     </EventWrapper>

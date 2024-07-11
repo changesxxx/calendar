@@ -1,4 +1,6 @@
-import React, { memo } from 'react'
+import React, { memo, useEffect } from 'react'
+
+import { useSelector, shallowEqual } from 'react-redux'
 
 import WeekWrapper from './style'
 import { Line } from './style'
@@ -31,19 +33,21 @@ const Week = memo(() => {
     '23pm',
   ]
 
-  const date = [
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-    'Sunday',
-  ]
+  const { currentWeek } = useSelector(
+    (state) => ({
+      currentWeek: state.date.currentWeek,
+    }),
+    shallowEqual,
+  )
+
+  useEffect(() => {
+    console.log(currentWeek)
+  }, [currentWeek])
+
   function dateElHandle() {
-    return date.map((day) => {
+    return currentWeek?.map((day) => {
       return (
-        <div className="week-of-day" key={day}>
+        <div className="week-of-day" key={day.date}>
           {timeArr.map((time, index) => {
             return (
               <div className="day-time" key={index + 'time'}>

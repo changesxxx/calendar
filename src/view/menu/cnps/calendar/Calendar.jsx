@@ -4,7 +4,12 @@ import CalendarWrapper from './style'
 
 import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 
-import { calendarArrayChange, currentDayChange,selectedDayChange,currentWeekChange } from '@/store/modules/date'
+import {
+  calendarArrayChange,
+  currentDayChange,
+  selectedDayChange,
+  currentWeekChange,
+} from '@/store/modules/date'
 
 import { getCalendar, recentYears, recentMonth } from '@/utils/date_handle'
 
@@ -45,23 +50,24 @@ const Calendar = memo(() => {
 
     //获取日历数据
     dispatch(calendarArrayChange([...getCalendar()]))
-
-    //获取当前周数据
-    // console.log('getCurretnWeek',getCurretnWeek())
-    // dispatch(currentWeekChange())
-
   }, [])
 
   useEffect(() => {
     //获取当前周数据
-    dispatch(currentWeekChange(getCurretnWeek(currentDay)))
+    if (currentDay) {
+      dispatch(currentWeekChange(getCurretnWeek(currentDay)))
+    }
   }, [calendarArray])
 
-
-//获取当前周数据
-  function getCurretnWeek (day = currentDay) { 
-    return calendarArray.find(w => 
-     w.some(d => day.years === d.years && day.months === d.months &&day.date === d.date)
+  //获取当前周数据
+  function getCurretnWeek(day = currentDay) {
+    return calendarArray.find((w) =>
+      w.some(
+        (d) =>
+          day.years === d.years &&
+          day.months === d.months &&
+          day.date === d.date,
+      ),
     )
   }
 
